@@ -1,0 +1,20 @@
+<?php use Modules\Kernel\View; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title><?= $view->title; ?></title>
+	<link href="/public/global.css" rel="stylesheet">
+	<?php foreach($view->styles as $style_href): ?>
+	<link href="/public/<?= $style_href; ?>" rel="stylesheet">
+	<?php endforeach; ?>
+	<?php foreach($view->scripts as $script_src): ?>
+	<script src="/public/<?= $style_ref; ?>"></script>
+	<?php endforeach; ?>
+</head>
+<body>
+	<?php View::render($view->content); ?>
+</body>
+</html>

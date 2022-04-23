@@ -1,0 +1,4 @@
+{
+	"/": "Controller\\Page\\Main",
+	"/search": "Controller\\Page\\Search"
+}

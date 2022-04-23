@@ -1,0 +1,19 @@
+server {
+	listen 80 default_server;
+	listen [::] default_server;
+	root /var/www/ActionPHP;
+	server_name actionphp.org;
+
+	location / {
+		# Use fastcgi in nginx
+		fastcgi_index	index.php;
+		include         fastcgi_params;
+		fastcgi_param	SCRIPT_NAME			'index.php';
+		fastcgi_param	SCRIPT_FILENAME		"$document_root/index.php";
+		fastcgi_pass	unix:/var/run/php/php8.1-fpm.sock;
+	}
+
+	location /public {
+		try_files $uri/ $uri =404;
+	}
+}
