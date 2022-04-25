@@ -6,15 +6,22 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title><?= $view->title; ?></title>
+
+	<!-- Site stylesheets -->
 	<link href="/public/global.css" rel="stylesheet">
 	<?php foreach($view->styles as $style_href): ?>
 	<link href="/public/<?= $style_href; ?>" rel="stylesheet">
 	<?php endforeach; ?>
+
+	<!-- Site scripts -->
+	<script src="/public/main.js" type="module"></script>
 	<?php foreach($view->scripts as $script_src): ?>
-	<script src="/public/<?= $style_ref; ?>"></script>
+	<script src="/public/<?= $style_ref; ?>" type="module"></script>
 	<?php endforeach; ?>
 </head>
 <body>
-	<?php View::render($view->content); ?>
+	<main id="main-container">
+		<?php View::render($view->content); ?>
+	</main>
 </body>
 </html>

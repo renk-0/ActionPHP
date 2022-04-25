@@ -3,10 +3,12 @@
 use ReflectionMethod;
 
 abstract class Form extends Page {
-	function init(): ReflectionMethod {
+	function init(): ?ReflectionMethod {
 		$event = parent::init();
-		if($event->name == '_submit')
-			$this->verify();
+		if(empty($event))
+			return null;
+		if(!$this->verify())
+			return null;
 		return $event;
 	}
 

@@ -32,8 +32,8 @@ class Database extends mysqli {
 	private function __construct() {
 		$this->connect(...$_ENV['Mysql']);
 	}
-
-	private function __destruct() {
+	
+	function __destruct() {
 		$this->close();
 	}
 }

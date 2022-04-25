@@ -1,7 +1,5 @@
 <?php namespace Modules\Kernel;
 
-use Exception;
-
 class Router {
 	static protected array $ROUTES = [];
 	
@@ -11,9 +9,9 @@ class Router {
 	}
 
 	static function get(string $path) {
-		$class = self::$ROUTES[$path] ?? null;
-		if(empty($class))
-			throw new Exception('Page not found');
+		if(!isset(self::$ROUTES[$path]))
+			return null;
+		$class = self::$ROUTES[$path];
 		$page = new $class;
 		return $page;
 	}

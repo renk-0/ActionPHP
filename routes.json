@@ -1,4 +1,5 @@
 {
 	"/": "Controller\\Page\\Main",
-	"/search": "Controller\\Page\\Search"
+	"/user/add": "Controller\\Form\\AddUser",
+	"/user/edit": "Controller\\Form\\EditUser"
 }

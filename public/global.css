@@ -1,5 +1,30 @@
+:root {
+	--background: whitesmoke;
+	--foreground: #16161d;
+	--default-font: 'Roboto', sans-serif;
+}
+
+html {
+	background: var(--background);
+	font-family: var(--default-font);
+	color: var(--foreground);
+	box-sizing: border-box;
+}
+
 body {
-	background: tomato;
-	font-family: 'Roboto', sans-serif;
-	color: whitesmoke;
+	box-sizing: border-box;
+	margin: 0;
+	display: block;
+}
+
+img {
+	display: block;
+	max-width: 100%;
+	min-width: 200px;
+}
+
+.container {
+	box-sizing: border-box;
+	max-width: 100vmin;
+	margin: auto;
 }

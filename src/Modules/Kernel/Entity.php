@@ -9,7 +9,6 @@ class Entity {
 	function save() {
 		$data_values = [];
 		$data_types = '';
-		$current_id = $this->id;
 		$table = static::TABLE;
 		$query = "INSERT INTO `$table` SET ";
 		unset($this->id);
@@ -73,17 +72,28 @@ class Entity {
 	static function loadAll(int ...$ids): array {
 		$rows = [];
 		$table = static::TABLE;
-		$query = "SELECT * FROM `$table` WHERE id = ?";
 		$db = Database::getConnection();
-		$stmt = $db->prepare($query);
-		foreach($ids as $id) {
-			$stmt->bind_param('i', $id);
+		if(count($ids) > 0) {
+			$query = "SELECT * FROM `$table` WHERE id = ?";
+			$stmt = $db->prepare($query);
+			foreach($ids as $id) {
+				$stmt->bind_param('i', $id);
+				$stmt->execute();
+				$result = $stmt->get_result();
+				$rows[] = $result->fetch_object(static::class);
+				$result->free();
+			}
+			$stmt->close();
+		} else {
+			$query = "SELECT * FROM `$table`";
+			$stmt = $db->prepare($query);
 			$stmt->execute();
 			$result = $stmt->get_result();
-			$rows[] = $result->fetch_object(static::class);
+			while($entity = $result->fetch_object(static::class))
+				$rows[] = $entity;
 			$result->free();
+			$stmt->close();
 		}
-		$stmt->close();
 		return $rows;
 	}
 
