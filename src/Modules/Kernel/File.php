@@ -9,6 +9,10 @@ class File extends Entity {
 
 	/** @return File[] */
 	static function uploadedFiles(): array {
+		foreach($_FILES as $name => $fields) {
+			$cant_files = count($_FILES[$name]['error']);
+			echo $cant_files;
+		}
 		echo '<pre>';
 		print_r($_FILES);
 		return [];
