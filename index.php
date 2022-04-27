@@ -12,8 +12,9 @@ Enviroment::include('local.ini');
 Router::read($_ENV['Site']['routes']);
 
 try {
+	$request_url = parse_url($_SERVER['REQUEST_URI']);
 	/** @var Page */
-	$content = Router::get($_SERVER['DOCUMENT_URI']);
+	$content = Router::get($request_url['path']);
 	if(empty($content))
 		throw new NotFoundException('Page not found');
 	$event = $content->init();
