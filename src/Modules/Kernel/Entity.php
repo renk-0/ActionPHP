@@ -107,5 +107,31 @@ class Entity {
 		$stmt->close();
 	}
 
+	static function search(array ...$conditions): array {
+		$rows = [];
+		$data_values = [];
+		$data_types = '';
+		$table = static::TABLE;
+		$query = "SELECT * FROM `$table`";
+		$db = Database::getConnection();
+		if(count($conditions) > 0) {
+			$query .= " WHERE ";
+			foreach($conditions as $cond) {
+				$query .= "{$cond[0]} ?, ";
+				$data_values[] = $cond[1];
+				$data_types .= Database::typeChar($cond[1]);
+			}
+			$query = substr($query, 0, -2);
+		}
+		$stmt = $db->prepare($query);
+		$stmt->bind_param($data_types, ...$data_values);
+		$stmt->execute();
+		$result = $stmt->get_result();
+		while($row = $result->fetch_object(static::class))
+			$rows[] = $row;
+		$result->free();
+		$stmt->close();
+		return $rows;
+	}
 }
 
