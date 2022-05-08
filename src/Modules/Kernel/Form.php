@@ -12,6 +12,15 @@ abstract class Form extends Page {
 		return $event;
 	}
 
+	// format: [?!#]string|30
+	static function verifyFields(array $fields, array $conditions) {
+		foreach($conditions as $key => $condition) {
+			$data = preg_match('/^\[(.*)\](.*)\|(\d*)$/', $condition, $results, PREG_OFFSET_CAPTURE);
+			print_r($data);
+			print_r($results);
+		}
+	}
+	
 	abstract function verify(): bool;
 	abstract function _submit();
 }

@@ -1,4 +1,4 @@
-<?php namespace Modules\Kernel;
+<?php namespace Modules\Account;
 
 class Role extends Entity {
 	const TABLE = 'role';

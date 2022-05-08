@@ -1,27 +1,29 @@
-<?php use Modules\Kernel\View; ?>
+<?php
+use Modules\Kernel\Session;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title><?= $view->title; ?></title>
+	<title><?= $this->title ?? SITE_NAME  ?></title>
+	<link href="/public/favicon.ico" rel="icon">
 
 	<!-- Site stylesheets -->
 	<link href="/public/global.css" rel="stylesheet">
-	<?php foreach($view->styles as $style_href): ?>
-	<link href="/public/<?= $style_href; ?>" rel="stylesheet">
-	<?php endforeach; ?>
-
+	<?php if(isset($this->styleSheet)): ?>
+	<link href="/public/<?= $this->styleSheet ?>" rel="stylesheet">
+	<?php endif ?>
 	<!-- Site scripts -->
 	<script src="/public/main.js" type="module"></script>
-	<?php foreach($view->scripts as $script_src): ?>
-	<script src="/public/<?= $style_ref; ?>" type="module"></script>
-	<?php endforeach; ?>
+	<?php if(isset($this->script)): ?>
+	<script src="/public/<?= $this->script ?>" type="module"></script>
+	<?php endif ?>
 </head>
 <body>
-	<main id="main-container">
-		<?php View::render($view->content); ?>
-	</main>
+	<header></header>
+	<main><?php parent::render(); ?></main>
+	<footer></footer>
 </body>
 </html>

@@ -1,8 +1,8 @@
 server {
 	listen 80 default_server;
 	listen [::] default_server;
-	root /var/www/ActionPHP;
-	server_name actionphp.org;
+	root /var/www/Test;
+	server_name test.xyz;
 
 	location / {
 		# Use fastcgi in nginx

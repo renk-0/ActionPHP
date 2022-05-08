@@ -1,137 +1,67 @@
 <?php namespace Modules\Kernel;
 
-use Modules\Mysql\Database;
-
 class Entity {
 	const TABLE = self::TABLE;
 	public int $id;
-
+	
 	function save() {
-		$data_values = [];
-		$data_types = '';
-		$table = static::TABLE;
-		$query = "INSERT INTO `$table` SET ";
+		/** @var \Modules\Mysql\Driver */
+		$driver = Storage::driver();
+		$insert = $driver->create(static::TABLE);
 		unset($this->id);
-		foreach($this as $key => $value) {
-			$query .= "`$key` = ?,";
-			$data_types .= Database::typeChar($value);
-			$data_values[] = $value;
-		}
-		$query = substr($query, 0, -1);
-		
-		$db = Database::getConnection();
-		$stmt = $db->prepare($query);
-		$stmt->bind_param($data_types, ...$data_values);
-		$stmt->execute();
-		$this->id = $stmt->insert_id;
-		$stmt->close();
-		return true;
+		foreach($this as $k => &$v)
+			$insert->set($k, $v);
+		$this->id = $insert->execute();
 	}
 
 	function update() {
-		$data_values = [];
-		$data_types = '';
-		$current_id = $this->id;
-		$table = static::TABLE;
-		$query = "UPDATE `$table` SET ";
-		unset($this->id);
-		foreach($this as $key => $value) {
-			$query .= "`$key` = ?,";
-			$data_types .= Database::typeChar($value);
-			$data_values[] = $value;
-		}
-		$query = substr($query, 0, -1);
-		$query .= " WHERE id = ?";
-		$data_types .= 'i';
-		$data_values[] = $current_id;
-		$this->id = $current_id;
-		
-		$db = Database::getConnection();
-		$stmt = $db->prepare($query);
-		$stmt->bind_param($data_types, ...$data_values);
-		$stmt->execute();
-		$stmt->close();
-		return true;
+		/** @var \Modules\Mysql\Driver */
+		$driver = Storage::driver();
+		$update = $driver->update(static::TABLE);
+		foreach($this as $k => &$v)
+			$update->set($k, $v);
+		$update->condition('id', $this->id);
+		$update->execute();
 	}
 
 	static function load(int $id): ?static {
-		$table = static::TABLE;
-		$query = "SELECT * FROM `$table` WHERE id = ?";
-		$db = Database::getConnection();
-		$stmt = $db->prepare($query);
-		$stmt->bind_param('i', $id);
-		$stmt->execute();
-		$result = $stmt->get_result();
-		$row = $result->fetch_object(static::class);
-		$result->free();
-		$stmt->close();
-		return $row;
+		/** @var \Modules\Mysql\Driver */
+		$driver = Storage::driver();
+		$select = $driver->read(static::TABLE);
+		$select->condition('id', $id);
+		$res = $select->execute();
+		$entity = $res->row(static::class);
+		$res->free();
+		return $entity;
 	}
 
-	/** @return static[] */
 	static function loadAll(int ...$ids): array {
 		$rows = [];
-		$table = static::TABLE;
-		$db = Database::getConnection();
+		/** @var \Modules\Mysql\Driver */
+		$driver = Storage::driver();
+		$select = $driver->read(static::TABLE);
 		if(count($ids) > 0) {
-			$query = "SELECT * FROM `$table` WHERE id = ?";
-			$stmt = $db->prepare($query);
+			$select->condition('id', $id);
 			foreach($ids as $id) {
-				$stmt->bind_param('i', $id);
-				$stmt->execute();
-				$result = $stmt->get_result();
-				$rows[] = $result->fetch_object(static::class);
-				$result->free();
+				$res = $select->execute();
+				$rows[] = $res->row(static::class);
+				$res->free();
 			}
-			$stmt->close();
+			return $rows;
 		} else {
-			$query = "SELECT * FROM `$table`";
-			$stmt = $db->prepare($query);
-			$stmt->execute();
-			$result = $stmt->get_result();
-			while($entity = $result->fetch_object(static::class))
-				$rows[] = $entity;
-			$result->free();
-			$stmt->close();
+			$res = $select->execute();
+			$rows = $res->all(static::class);
+			$res->free();
+			return $rows;
 		}
-		return $rows;
 	}
 
 	static function remove(int $id) {
-		$table = static::TABLE;
-		$query = "DELETE FROM `$table` WHERE id = ?";
-		$db = Database::getConnection();
-		$stmt = $db->prepare($query);
-		$stmt->bind_param('i', $id);
-		$stmt->execute();
-		$stmt->close();
-	}
-
-	static function search(array ...$conditions): array {
-		$rows = [];
-		$data_values = [];
-		$data_types = '';
-		$table = static::TABLE;
-		$query = "SELECT * FROM `$table`";
-		$db = Database::getConnection();
-		if(count($conditions) > 0) {
-			$query .= " WHERE ";
-			foreach($conditions as $cond) {
-				$query .= "{$cond[0]} ?, ";
-				$data_values[] = $cond[1];
-				$data_types .= Database::typeChar($cond[1]);
-			}
-			$query = substr($query, 0, -2);
-		}
-		$stmt = $db->prepare($query);
-		$stmt->bind_param($data_types, ...$data_values);
-		$stmt->execute();
-		$result = $stmt->get_result();
-		while($row = $result->fetch_object(static::class))
-			$rows[] = $row;
-		$result->free();
-		$stmt->close();
-		return $rows;
+		/** @var \Modules\Mysql\Driver */
+		$driver = Storage::driver();
+		$delete = $driver->delete(static::TABLE);
+		$delete->condition('id', $id);
+		$delete->execute();
 	}
 }
 

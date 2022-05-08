@@ -1,0 +1,12 @@
+<div class="container">
+	<h1>Error!</h1>
+	<p>Lo sentimos, algo indebido ha sucedido</p>
+	<?php if(DEVEL): ?>
+	<div class="section">
+		<h3>Message: </h3>
+		<pre><?= $this->error->getMessage() ?></pre>
+	</div>
+	
+	<h3>Trace: </h3>
+	<?php endif; ?>
+</div>

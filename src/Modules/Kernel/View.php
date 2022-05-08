@@ -1,23 +1,23 @@
 <?php namespace Modules\Kernel;
 
-use Error;
 
 class View {
+	const DIR = 'src/Templates/';
 	private string $file;
-	
+
 	function __construct(string $file) {
-		if(!isset($file))
-			throw new Error('Views needs a template');
-		$this->file = "src/Templates/$file";
+		if($file[0] != '/')
+			$file = self::DIR . $file;
+		$this->file = $file;
 	}
 
 	function __toString() {
 		return $this->file;
 	}
 
-	static function render(View $view): bool {
+	function render(): bool {
 		ob_start();
-		include $view;
+		include $this->file;
 		return ob_end_flush();
 	}
 }

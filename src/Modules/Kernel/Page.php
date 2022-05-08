@@ -3,23 +3,39 @@
 use ReflectionClass;
 use ReflectionMethod;
 
-class Page extends View {
-	private View $page;
+abstract class Page extends View {
+	private string $styleSheet;
+	private string $script;
+	private string $title;
+	private array $permissions = [];
 
-	function __construct(string $file) {
-		parent::__construct($file);
-		$this->page = new View('page_template.phtml');
-		$this->page->styles = [];
-		$this->page->scripts = [];
-		$this->setContent($this);
+	function render(): bool {
+		ob_start();
+		include "src/Templates/page_template.phtml";
+		return ob_end_flush();
 	}
 
-	/**
-	 * Process the requested event send by
-	 * the user and check if the method
-	 * is a valid event
-	 * */
+	protected function title(string $title) {
+		$this->title = $title;
+	}
+
+	protected function style(string $href) {
+		$this->styleSheet = $href;
+	}
+
+	protected function script(string $src) {
+		$this->script = $src;
+	}
+
+	protected function access(string ...$permissions) {
+		$this->permissions = $permissions;
+	}
+
 	public function init(): ?ReflectionMethod {
+		// Check if the user has permissions
+		
+
+		// Process the event
 		$event = $_GET['e'] ?? NULL;
 		if(isset($event) && !empty($event)) {
 			$refl = new ReflectionClass(static::class);
@@ -31,29 +47,5 @@ class Page extends View {
 			}
 		}
 		return null;
-	}
-
-	function getPage(): View {
-		return $this->page;
-	}
-
-	protected function setContent(View $content) {
-		$this->page->content = $content;
-	}
-
-	function setTitle(string $title) {
-		$this->page->title = $title;
-	}
-
-	function getTitle(): ?string {
-		return $this->page->title;
-	}
-
-	function addStyle(string $file) {
-		$this->page->styles[] = $file;
-	}
-
-	function addScript(string $file) {
-		$this->page->scripts[] = $file;
 	}
 }

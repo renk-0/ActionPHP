@@ -1,31 +1,30 @@
 <?php
 require_once "src/autoloader.php";
+require_once 'settings.php';
+include_once 'local.settings.php';
 
-use Modules\Kernel\Enviroment;
-use Modules\Kernel\NotFoundException;
-use Modules\Kernel\Page;
-use Modules\Kernel\Router;
-use Modules\Kernel\View;
+use Modules\Router\Router;
+use Modules\Account\Session;
+use Modules\Kernel\Storage;
+use Modules\Router\Error as ErrorPage;
 
-Enviroment::read('site.ini');
-Enviroment::include('local.ini');
-Router::read($_ENV['Site']['routes']);
+Session::start();
+Router::file('routes.json');
 
 try {
-	$request_url = parse_url($_SERVER['REQUEST_URI']);
+	$page = Router::current();
+	$fn = $page->init();
+	if(!empty($fn))
+		$fn->invoke($page);
+	$page->render();
+} catch(Error|Exception $e) {
+	while(ob_get_level() > 0)
+		ob_end_clean();
 	/** @var Page */
-	$content = Router::get($request_url['path']);
-	if(empty($content))
-		throw new NotFoundException('Page not found');
-	$event = $content->init();
-	if($event) $event->invoke($content);
-	View::render($content->getPage());
-} catch(NotFoundException $not_found) {
-	$view = new Page($_ENV['Site']['not_found']);
-	$view->error = $not_found;
-	View::render($view->getPage());
-} catch(Error|Exception $error) {
-	$view = new Page($_ENV['Site']['error_page']);
-	$view->error = $error;
-	View::render($view->getPage());
+	$page = new ErrorPage;
+	$page->error = $e;
+	$page->render();
 }
+
+Session::stop();
+Storage::close();
